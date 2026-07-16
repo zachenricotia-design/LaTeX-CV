@@ -53,12 +53,12 @@ src/
 │   ├── BuilderPage.jsx           # Main builder UI
 │   └── LandingPage.jsx           # Optional intro page
 ├── hooks/
-│   ├── useCVStore.js             # Zustand or Context state
-│   └── useAutoSave.js
+│   ├── useCVStore.jsx             # Zustand or Context state
+│   └── useAutoSave.jsx
 ├── services/
-│   └── api.js                    # Axios instance & API calls
+│   └── api.jsx                    # Axios instance & API calls
 └── utils/
-    └── validators.js
+    └── validators.jsx
 ```
 
 ### 1.2 CV Sections & Fields
@@ -83,7 +83,8 @@ src/
 | Location     | text      |
 | Start Date   | month/yr  |
 | End Date     | month/yr or "Present" |
-| Description  | textarea (bullet points) |
+| Description1  | textarea (bullet points) |
+| Description2  | textarea (bullet points) |
 
 #### Education *(repeatable)*
 | Field        | Type      |
@@ -194,23 +195,23 @@ src/
 server/
 ├── src/
 │   ├── routes/
-│   │   ├── cv.routes.js         # CV CRUD & export
-│   │   └── user.routes.js       # Auth (optional)
+│   │   ├── cv.routes.jsx         # CV CRUD & export
+│   │   └── user.routes.jsx       # Auth (optional)
 │   ├── controllers/
-│   │   ├── cv.controller.js
-│   │   └── export.controller.js
+│   │   ├── cv.controller.jsx
+│   │   └── export.controller.jsx
 │   ├── services/
-│   │   ├── cv.service.js        # Business logic
-│   │   └── latex.service.js     # Calls Python script
+│   │   ├── cv.service.jsx        # Business logic
+│   │   └── latex.service.jsx     # Calls Python script
 │   ├── middleware/
-│   │   ├── validate.js          # Joi/Zod request validation
-│   │   └── errorHandler.js
+│   │   ├── validate.jsx          # Joi/Zod request validation
+│   │   └── errorHandler.jsx
 │   ├── db/
-│   │   ├── pool.js              # pg Pool instance
+│   │   ├── pool.jsx              # pg Pool instance
 │   │   └── migrations/          # SQL migration files
 │   ├── utils/
-│   │   └── fileCleanup.js       # Remove temp .tex files
-│   └── app.js
+│   │   └── fileCleanup.jsx       # Remove temp .tex files
+│   └── app.jsx
 ├── python/
 │   └── generate_latex.py        # LaTeX generation script
 ├── .env
