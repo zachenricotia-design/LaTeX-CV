@@ -74,50 +74,47 @@
 
 ---
 
-## Phase 2 — Backend: LaTeX Export
+## Phase 2 — Backend: LaTeX to PDF Compilation
+
+### PDF Compiler Setup
+- [ ] Install PDF LaTeX compiler on server host machine (e.g., `pdflatex` via TeX Live/MiKTeX, or `tectonic`)
+- [ ] Add `PYTHON_PATH`, `TEMP_DIR`, and compiler executables to `.env` configuration
 
 ### Python Script
 - [ ] Create `server/python/generate_latex.py`
   - [ ] Read CV JSON from stdin (`import sys, json; data = json.load(sys.stdin)`)
   - [ ] Install Jinja2: `pip install jinja2`
   - [ ] Create `templates/resume.tex.j2` — base LaTeX template
-  - [ ] Implement rendering for each section type:
-    - [ ] Personal details (header block)
-    - [ ] Experience entries
-    - [ ] Education entries
-    - [ ] Awards entries
-    - [ ] Projects entries
-    - [ ] Skills (grouped tag list)
-    - [ ] Characteristics (tag list)
-    - [ ] Certifications entries
-    - [ ] Research Publications entries
+  - [ ] Support conditional logic to embed a profile photo if `profilePhotoPath` is supplied (using `\usepackage{graphicx}` and `\includegraphics`)
+  - [ ] Implement rendering for each section type (Personal, Experience, Education, etc.)
   - [ ] Handle optional sections (skip if not present in JSON)
-  - [ ] Output rendered `.tex` to stdout
+  - [ ] Output rendered `.tex` markup to stdout
   - [ ] Test script independently: `echo '{"personal": {...}}' | python3 generate_latex.py`
 
-### LaTeX Service (Node.js)
+### LaTeX/PDF Service (Node.js)
 - [ ] Create `src/services/latex.service.js`
-  - [ ] Spawn Python script via `child_process.spawn`
-  - [ ] Write CV JSON to stdin
-  - [ ] Collect stdout into string buffer
-  - [ ] Reject promise on non-zero exit code
-  - [ ] Log stderr for debugging
+  - [ ] Generate unique run ID (`uuid`) and create a temporary subdirectory under `TEMP_DIR`
+  - [ ] Check for `profilePhoto` (base64 string) in the payload; decode and write to temporary file if present
+  - [ ] Spawn Python script to generate `.tex` string and write to a `resume.tex` file in the temp subdirectory
+  - [ ] Spawn PDF compiler child process (e.g., `pdflatex -interaction=nonstopmode resume.tex`) within the temp subdirectory
+  - [ ] Capture compiler output and handle non-zero exit codes (log compilation errors)
+  - [ ] Read the compiled `resume.pdf` into a buffer, resolve the promise, and clean up the temp directory asynchronously
 
 ### Export Endpoint
-- [ ] **POST `/api/cv/export`** — Generate `.tex` from request body
+- [ ] **POST `/api/cv/export`** — Generate `.pdf` from request body
   - [ ] Validate request body
-  - [ ] Call `latex.service.generateLatex(cvData)`
+  - [ ] Call `latex.service.generatePdf(cvData)`
   - [ ] Set response headers:
-    - `Content-Type: application/x-tex`
-    - `Content-Disposition: attachment; filename="resume.tex"`
-  - [ ] Stream `.tex` content in response
-- [ ] **POST `/api/cv/:id/export`** — Export saved CV by ID
-  - [ ] Fetch CV from DB, then call same latex service
+    - `Content-Type: application/pdf`
+    - `Content-Disposition: attachment; filename="resume.pdf"`
+  - [ ] Stream the `.pdf` buffer in the response
+- [ ] **POST `/api/cv/:id/export`** — Export saved CV by ID as a `.pdf` file
+  - [ ] Fetch CV from DB, then compile to PDF using the same service
 - [ ] Add rate limiting to export endpoints (`express-rate-limit`)
 
-### Temp File Cleanup (if writing to disk instead of streaming)
+### Temp File Cleanup
 - [ ] Create `src/utils/fileCleanup.js`
-- [ ] Delete temp `.tex` files after response is sent
+  - [ ] Verify background/failsafe clean up scripts for abandoned temporary compiler directories
 
 ---
 
@@ -127,7 +124,7 @@
 - [ ] Create `src/hooks/useCVStore.js`
 - [ ] Define store shape:
   ```js
-  { personal: {}, sections: [], addSection, removeSection,
+  { personal: { name, title, profilePhoto, location, ... }, sections: [], addSection, removeSection,
     updatePersonal, addEntry, updateEntry, removeEntry, reorderSections }
   ```
 - [ ] Implement all actions
@@ -142,7 +139,7 @@
   - [ ] Show "Added ✓" state for active sections
 - [ ] Create `src/components/layout/Header.jsx`
   - [ ] App logo/name
-  - [ ] "Generate LaTeX" CTA button
+  - [ ] "Generate PDF" CTA button
 - [ ] Set up routing in `App.jsx` (react-router-dom)
 
 ---
@@ -158,8 +155,13 @@
 
 ### Personal Details Section
 - [ ] `PersonalDetails.jsx`
-  - [ ] Fields: name, title, location, email, phone, linkedin, github, website
+  - [ ] Fields: name, title, profilePhoto, location, email, phone, linkedin, github, website
   - [ ] Always rendered (cannot be removed)
+  - [ ] File upload selector for `profilePhoto` with:
+    - [ ] Type validation (JPEG/PNG)
+    - [ ] Size limitation (e.g. max 2MB)
+    - [ ] Conversion to base64 data URL
+    - [ ] Thumbnail preview and a "Remove Photo" option
   - [ ] Inline validation (email format, URL format)
 
 ### Repeatable Entry Sections
@@ -197,11 +199,11 @@ For each: Experience, Education, Awards, Projects, Certifications, Research Publ
   - [ ] `saveCV(cvData)` — POST to `/api/cv`
   - [ ] `loadCV(id)` — GET `/api/cv/:id`
 - [ ] Create `src/components/modals/ExportModal.jsx`
-  - [ ] Show on "Generate LaTeX" click
+  - [ ] Show on "Generate PDF" click
   - [ ] Display loading spinner during API call
-  - [ ] On success: trigger browser file download
+  - [ ] On success: trigger browser PDF file download
   - [ ] On error: show error message with retry option
-- [ ] Wire "Generate LaTeX" button in `Header.jsx` to open modal and trigger export
+- [ ] Wire "Generate PDF" button in `Header.jsx` to open modal and trigger export
 
 ---
 
@@ -237,9 +239,8 @@ For each: Experience, Education, Awards, Projects, Certifications, Research Publ
 
 - [ ] User authentication (JWT) — save/load multiple CV drafts
 - [ ] Drag-and-drop section reordering (`@dnd-kit/core`)
-- [ ] Live LaTeX preview panel (render PDF in-browser via PDF.js)
+- [ ] Live PDF preview panel (render PDF in-browser via PDF.js or an iframe)
 - [ ] Multiple LaTeX template styles (modern, classic, academic)
-- [ ] Export to PDF directly (call `pdflatex` on server, return `.pdf`)
 - [ ] Share CV via public link
 - [ ] Import from LinkedIn (scrape or OAuth)
 - [ ] Dark mode toggle
@@ -253,5 +254,5 @@ For each: Experience, Education, Awards, Projects, Certifications, Research Publ
 | Backend endpoint | Returns correct status codes, validated inputs, tested        |
 | Section component | Renders, updates Zustand store, validates required fields    |
 | Python script | Produces valid compilable `.tex` for all section combinations   |
-| Export flow  | `.tex` file downloads correctly in Chrome, Firefox, Safari       |
+| Export flow  | `.pdf` file downloads correctly in Chrome, Firefox, Safari       |
 | Overall app  | All sections can be added, filled, and exported without errors   |

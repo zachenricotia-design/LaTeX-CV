@@ -2,7 +2,9 @@
 
 ## Overview
 
-A full-stack web application that allows users to build a professional CV/resume by filling in structured form sections. Upon completion, the app generates a downloadable LaTeX (`.tex`) file compiled via a Python backend script.
+A full-stack web application that allows users to build a professional CV/resume by filling in structured form sections. Upon completion, the app compiles the generated LaTeX (`.tex`) code directly into a downloadable PDF document (`.pdf`) using a backend compiler, saving the user from manually converting files.
+
+The application also supports uploading a professional profile image which is dynamically embedded in the final PDF CV.
 
 ---
 
@@ -14,7 +16,8 @@ A full-stack web application that allows users to build a professional CV/resume
 | Backend    | Node.js, Express.js (REST API)    |
 | Database   | PostgreSQL                        |
 | ORM        | Prisma (or pg/node-postgres raw)  |
-| LaTeX Gen  | Python script (called via child_process or microservice) |
+| LaTeX Gen  | Python script (renders `.tex` markup from Jinja2 templates) |
+| PDF Comp   | Server-side compiler (e.g., `pdflatex` or `tectonic` spawned by Node.js service) |
 | Auth       | JWT (optional, for saving drafts) |
 
 ---
@@ -68,6 +71,7 @@ src/
 |---------------|--------|-------------------------------|
 | Full Name     | text   | Required                      |
 | Job Title     | text   | e.g. "Software Engineer"      |
+| Profile Photo | string | Base64 encoded image (PNG/JPEG) data URL |
 | Location      | text   | City, Country                 |
 | Email (Gmail) | email  | Validated format              |
 | Phone Number  | tel    | With country code             |
@@ -78,8 +82,8 @@ src/
 #### Experience *(repeatable)*
 | Field        | Type      |
 |--------------|-----------|
-| Job Title    | text      |
-| Company      | text      |
+| Job Title/Position    | text      |
+| Company/Org      | text      |
 | Location     | text      |
 | Start Date   | month/yr  |
 | End Date     | month/yr or "Present" |
@@ -179,11 +183,15 @@ src/
 
 ### 1.5 Export Flow
 
-1. User clicks **"Generate LaTeX"** button.
-2. Frontend POSTs full CV JSON to `POST /api/cv/export`.
-3. Backend calls Python script to render `.tex`.
-4. Backend returns the `.tex` file as a download stream.
-5. Frontend triggers browser download.
+1. User clicks **"Generate PDF"** button.
+2. Frontend POSTs full CV JSON (including base64 profile photo data) to `POST /api/cv/export`.
+3. Backend parses request, decodes the base64 image (if present), and writes it to a temporary compilation directory.
+4. Backend runs Python script to generate the raw LaTeX code with appropriate template layout (including the image include path).
+5. Backend writes the `.tex` file to the temporary directory.
+6. Backend spawns a child process to run `pdflatex` or `tectonic` over the temporary `.tex` file to build `resume.pdf`.
+7. Backend returns the compiled `resume.pdf` file as a download stream.
+8. Frontend triggers browser download.
+9. Backend removes all temporary files (the `.tex`, `.pdf`, `.aux`, `.log`, and decoded image file) from the system.
 
 ---
 
@@ -228,8 +236,8 @@ server/
 | GET    | `/api/cv/:id`         | Retrieve a saved CV by ID          |
 | PUT    | `/api/cv/:id`         | Update a CV draft                  |
 | DELETE | `/api/cv/:id`         | Delete a CV                        |
-| POST   | `/api/cv/export`      | Generate and download `.tex` file  |
-| POST   | `/api/cv/:id/export`  | Export a saved CV by ID            |
+| POST   | `/api/cv/export`      | Generate and download compiled `.pdf` file |
+| POST   | `/api/cv/:id/export`  | Export a saved CV by ID as a `.pdf` file   |
 
 #### Request Body — Save/Update CV
 
@@ -266,9 +274,9 @@ server/
 
 #### Response — Export
 
-- `Content-Type: application/x-tex`
-- `Content-Disposition: attachment; filename="resume.tex"`
-- Body: raw `.tex` file contents
+- `Content-Type: application/pdf`
+- `Content-Disposition: attachment; filename="resume.pdf"`
+- Body: raw `.pdf` binary stream
 
 ### 2.3 Database Schema (PostgreSQL)
 
@@ -303,24 +311,94 @@ CREATE INDEX idx_cvs_user_id ON cvs(user_id);
 **Script:** `python/generate_latex.py`
 
 - Accepts CV JSON via **stdin** or as a **CLI argument** (`--json`).
-- Outputs a valid `.tex` file to **stdout** or a specified path.
+- Outputs a valid `.tex` markup to **stdout**.
 - Uses Jinja2 templating for `.tex` template rendering.
-- Node.js calls it via `child_process.spawn`:
+- Handles embedding the profile photo if `profilePhotoPath` (the path to the temporary image file on the backend host) is defined in the JSON metadata.
+- Node.js calls this script and compiles the PDF using a sub-process wrapper.
 
 ```js
 // latex.service.js
 const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
-function generateLatex(cvData) {
+function generatePdf(cvData) {
   return new Promise((resolve, reject) => {
-    const py = spawn('python3', ['./python/generate_latex.py']);
-    let output = '';
-    py.stdin.write(JSON.stringify(cvData));
+    const runId = uuidv4();
+    const tempDir = path.join(process.env.TEMP_DIR || './tmp', runId);
+    
+    // 1. Setup workspace directory
+    fs.mkdirSync(tempDir, { recursive: true });
+    
+    let imageFilename = null;
+    if (cvData.personal?.profilePhoto) {
+      // Decode profilePhoto data URL if present
+      const matches = cvData.personal.profilePhoto.match(/^data:image\/([a-zA-Z+]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const ext = matches[1];
+        const base64Data = matches[2];
+        imageFilename = `profile.${ext}`;
+        fs.writeFileSync(path.join(tempDir, imageFilename), Buffer.from(base64Data, 'base64'));
+      }
+    }
+    
+    const renderData = {
+      ...cvData,
+      personal: {
+        ...cvData.personal,
+        profilePhotoPath: imageFilename // File name of the image relative to compilation folder
+      }
+    };
+
+    // 2. Generate LaTeX code via Python script
+    const py = spawn(process.env.PYTHON_PATH || 'python3', ['./python/generate_latex.py']);
+    let texContent = '';
+    let pyError = '';
+    
+    py.stdin.write(JSON.stringify(renderData));
     py.stdin.end();
-    py.stdout.on('data', chunk => output += chunk);
+    
+    py.stdout.on('data', chunk => texContent += chunk);
+    py.stderr.on('data', chunk => pyError += chunk);
+    
     py.on('close', code => {
-      if (code === 0) resolve(output);
-      else reject(new Error('LaTeX generation failed'));
+      if (code !== 0) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+        return reject(new Error(`LaTeX template generation failed: ${pyError}`));
+      }
+      
+      const texPath = path.join(tempDir, 'resume.tex');
+      fs.writeFileSync(texPath, texContent);
+      
+      // 3. Compile .tex to .pdf using pdflatex
+      // Execute in tempDir so generated build artifacts stay contained
+      const compiler = spawn('pdflatex', [
+        '-interaction=nonstopmode',
+        '-halt-on-error',
+        'resume.tex'
+      ], { cwd: tempDir });
+      
+      let compilerLog = '';
+      compiler.stdout.on('data', chunk => compilerLog += chunk);
+      
+      compiler.on('close', compileCode => {
+        if (compileCode !== 0) {
+          fs.rmSync(tempDir, { recursive: true, force: true });
+          return reject(new Error(`PDF compilation failed. Log: ${compilerLog}`));
+        }
+        
+        const pdfPath = path.join(tempDir, 'resume.pdf');
+        if (fs.existsSync(pdfPath)) {
+          const pdfBuffer = fs.readFileSync(pdfPath);
+          // Delete temp files asynchronously to free disk space
+          fs.rm(tempDir, { recursive: true, force: true }, () => {});
+          resolve(pdfBuffer);
+        } else {
+          fs.rmSync(tempDir, { recursive: true, force: true });
+          reject(new Error('PDF file not found after successful compile run.'));
+        }
+      });
     });
   });
 }
