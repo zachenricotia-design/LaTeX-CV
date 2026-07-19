@@ -2,3 +2,4 @@ node_modules
 .emp
 tmp/
 dist/
+.env
