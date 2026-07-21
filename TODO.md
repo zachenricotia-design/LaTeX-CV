@@ -51,29 +51,29 @@
 ## Phase 1 — Backend: Core API
 
 ### CV CRUD Endpoints
-- [ ] Create `src/routes/cv.routes.js` and mount at `/api/cv`
-- [ ] **POST `/api/cv`** — Save new CV draft
-  - [ ] Validate request body (Joi schema: personal + sections)
-  - [ ] Check if authenticated. If anonymous:
-    - [ ] Generate secure random hex string as `access_token`
-    - [ ] Hash token using SHA-256 to create `access_token_hash`
-    - [ ] Insert into `cvs` table (`personal_data`, `sections`, `access_token_hash`)
-    - [ ] Return `{ id, accessToken, createdAt }`
+- [x] Create `src/routes/cv.routes.js` and mount at `/api/cv`
+- [x] **POST `/api/cv`** — Save new CV draft
+  - [x] Validate request body (Joi schema: personal + sections)
+  - [x] Check if authenticated. If anonymous:
+    - [x] Generate secure random hex string as `access_token`
+    - [x] Hash token using SHA-256 to create `access_token_hash`
+    - [x] Insert into `cvs` table (`personal_data`, `sections`, `access_token_hash`)
+    - [x] Return `{ id, accessToken, createdAt }`
   - [ ] If authenticated: Insert with `user_id` and return `{ id, createdAt }`
-- [ ] **GET `/api/cv/:id`** — Fetch CV by ID
-  - [ ] Validate UUID format
-  - [ ] Retrieve row and check permission:
-    - [ ] If anonymous draft (`user_id` is NULL): hash `X-CV-Access-Token` request header and compare with database `access_token_hash`. Return 401/403 if missing or mismatch.
+- [x] **GET `/api/cv/:id`** — Fetch CV by ID
+  - [x] Validate UUID format
+  - [x] Retrieve row and check permission:
+    - [x] If anonymous draft (`user_id` is NULL): hash `X-CV-Access-Token` request header and compare with database `access_token_hash`. Return 401/403 if missing or mismatch.
     - [ ] If authenticated draft: verify token matches owner (`user_id`).
-  - [ ] Return full CV JSON or 404
-- [ ] **PUT `/api/cv/:id`** — Update CV draft
-  - [ ] Validate body and UUID
-  - [ ] Verify permission (hash `X-CV-Access-Token` for anonymous, or check JWT user ID)
-  - [ ] Update row, set `updated_at = NOW()`
-  - [ ] Return updated CV
-- [ ] **DELETE `/api/cv/:id`** — Delete CV
-  - [ ] Verify permission (hash `X-CV-Access-Token` for anonymous, or check JWT user ID)
-  - [ ] Return 204 on success
+  - [x] Return full CV JSON or 404
+- [x] **PUT `/api/cv/:id`** — Update CV draft
+  - [x] Validate body and UUID
+  - [x] Verify permission (hash `X-CV-Access-Token` for anonymous, or check JWT user ID)
+  - [x] Update row, set `updated_at = NOW()`
+  - [x] Return updated CV
+- [x] **DELETE `/api/cv/:id`** — Delete CV
+  - [x] Verify permission (hash `X-CV-Access-Token` for anonymous, or check JWT user ID)
+  - [x] Return 204 on success
 
 ### User Authentication & Claiming Endpoints
 - [ ] Create `src/routes/auth.routes.js` and mount at `/api/auth`
@@ -90,12 +90,12 @@
 
 
 ### Validation Middleware
-- [ ] Create `src/middleware/validate.js` using Joi
-- [ ] Define Joi schemas for personal details and each section type
-- [ ] Apply validation middleware to all POST/PUT routes
+- [x] Create `src/middleware/validate.js` using Joi
+- [x] Define Joi schemas for personal details and each section type
+- [x] Apply validation middleware to all POST/PUT routes
 
 ### Rate Limiting & Bloat Prevention
-- [ ] Apply body size limit to Express parser: `app.use(express.json({ limit: '125kb' }))`
+- [x] Apply body size limit to Express parser: `app.use(express.json({ limit: '125kb' }))`
 - [ ] Configure `express-rate-limit` for `POST /api/cv` (max 10 requests per hour per IP)
 - [ ] Configure general rate limiting for preview generation and export endpoints
 
