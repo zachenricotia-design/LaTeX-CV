@@ -111,3 +111,27 @@ export const deleteCV = async (req, res, next) => {
     next(error);
   }
 };
+
+export const claimCV = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const accessToken = req.header('X-CV-Access-Token');
+    const user = req.user;
+    if (!user) return res.status(401).json({ error: true, message: 'Unauthorized' });
+
+    const cv = await cvService.findCVById(id);
+    if (!cv) return res.status(404).json({ error: true, message: 'CV not found' });
+    if (cv.user_id) return res.status(400).json({ error: true, message: 'CV already claimed' });
+
+    if (!accessToken) return res.status(401).json({ error: true, message: 'Missing CV access token' });
+    const tokenHash = computeHash(accessToken);
+    if (tokenHash !== cv.access_token_hash) return res.status(403).json({ error: true, message: 'Invalid CV access token' });
+
+    const updated = await cvService.claimCV(id, user.id);
+    if (!updated) return res.status(500).json({ error: true, message: 'Could not claim CV' });
+
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};

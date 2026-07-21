@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cvRoutes from './routes/cv.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -15,6 +16,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/cv', cvRoutes);
+app.use('/api/auth', authRoutes);
 
 app.use(errorHandler);
 

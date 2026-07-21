@@ -76,16 +76,16 @@
   - [x] Return 204 on success
 
 ### User Authentication & Claiming Endpoints
-- [ ] Create `src/routes/auth.routes.js` and mount at `/api/auth`
-  - [ ] **POST `/api/auth/register`** — Register new user (validate, bcrypt hash, insert, sign and return JWT)
-  - [ ] **POST `/api/auth/login`** — Authenticate user (find user, bcrypt check, sign and return JWT)
-- [ ] **POST `/api/cv/:id/claim`** — Claim ownership of an anonymous CV draft
-  - [ ] Validate UUID format of the draft ID
-  - [ ] Retrieve row and verify that `user_id` is NULL
-  - [ ] Validate `X-CV-Access-Token` header by hashing it and matching `access_token_hash`
-  - [ ] Retrieve user ID from validated JWT token
-  - [ ] Update `cvs` set `user_id = <logged_in_user_id>` and `access_token_hash = NULL`
-  - [ ] Return `{ success: true }`
+- [x] Create `src/routes/auth.routes.js` and mount at `/api/auth`
+  - [x] **POST `/api/auth/register`** — Register new user (validate, bcrypt hash, insert, sign and return JWT)
+  - [x] **POST `/api/auth/login`** — Authenticate user (find user, bcrypt check, sign and return JWT)
+- [x] **POST `/api/cv/:id/claim`** — Claim ownership of an anonymous CV draft
+  - [x] Validate UUID format of the draft ID
+  - [x] Retrieve row and verify that `user_id` is NULL
+  - [x] Validate `X-CV-Access-Token` header by hashing it and matching `access_token_hash`
+  - [x] Retrieve user ID from validated JWT token
+  - [x] Update `cvs` set `user_id = <logged_in_user_id>` and `access_token_hash = NULL`
+  - [x] Return `{ success: true }`
 
 
 
@@ -96,7 +96,7 @@
 
 ### Rate Limiting & Bloat Prevention
 - [x] Apply body size limit to Express parser: `app.use(express.json({ limit: '125kb' }))`
-- [ ] Configure `express-rate-limit` for `POST /api/cv` (max 10 requests per hour per IP)
+- [x] Configure `express-rate-limit` for `POST /api/cv` (max 10 requests per hour per IP)
 - [ ] Configure general rate limiting for preview generation and export endpoints
 
 ### Inactivity Cleanup Service

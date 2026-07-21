@@ -36,3 +36,11 @@ export const deleteCV = async (id) => {
   const result = await pool.query(`DELETE FROM cvs WHERE id = $1`, [id]);
   return result.rowCount === 1;
 };
+
+export const claimCV = async (id, userId) => {
+  const result = await pool.query(
+    `UPDATE cvs SET user_id = $1, access_token_hash = NULL WHERE id = $2 AND user_id IS NULL RETURNING id, user_id`,
+    [userId, id]
+  );
+  return result.rows[0] || null;
+};
