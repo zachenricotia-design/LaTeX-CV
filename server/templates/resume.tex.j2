@@ -1,0 +1,337 @@
+%-------------------------
+% Resume in Latex
+% Template Type: Professional Clean / ATS-Friendly
+% IMPORTANT: Lines 1-79 must be explicitly copied to set the formatting of the document
+%-------------------------
+
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.0in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\hrule \vspace{-5pt}]
+
+% Ensure that generated PDF is machine readable/ATS parsable
+\pdfgentounicode=1
+
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textit{#2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textit{#2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+% Always start with \begin to initialize the document
+\begin{document}
+
+% NOTE: When I declare or say that the part is optional, do not add it if the user left it empty.
+
+
+%----------HEADING (Required)----------
+% Format:
+%  \begin{center}
+%      \textbf{\Huge \scshape First Name Last Name} \\ \vspace{13pt}
+%      \small 
+%      \faMapMarker* Location \quad
+%      \href{mailto:[Email Address (mail@example.com)]}{\faEnvelope \ [Email Address (mail@example.com)]} \quad
+%      \href{tel:[Phone Number]}{\faPhone* \ [Phone Number (Formatted as [Country code(+X)] XXX XXX XXXX)]} \quad
+%      \href{https://www.linkedin.com/in/display-name-accCode/}{\faLinkedin \ Display Name} \quad
+%      \href{https://github.com/user-name}{\faGithub \ user-name} % Do not add this if the user did not provide a GitHub Link (optional)
+%  \end{center} 
+
+% Example:
+\begin{center}
+    \textbf{\Huge \scshape Zach Enrico Tia} \\ \vspace{13pt}
+    \small 
+    \faMapMarker* Davao City \quad
+    \href{mailto:zachenrico.tia@gmail.com}{\faEnvelope \ zachenrico.tia@gmail.com} \quad
+    \href{tel:+639238284537}{\faPhone* \ +63 923 828 4537} \quad
+    \href{https://www.linkedin.com/in/zach-tia-36796737b/}{\faLinkedin \ Zach Tia} \quad
+    \href{https://github.com/zachenricotia-design}{\faGithub \ zachenricotia-design}
+\end{center}
+%----------EXPERIENCE (Required at least one subheading)----------
+% Format:
+%  \section{Experience} 
+%    \resumeSubHeadingListStart
+%      \resumeSubheading
+%        {Job Title/Position} 
+%        {Start Date -- End Date} % If the end date is same as the start date, it should only display the start date 
+%        {Company/Org} 
+%        {}
+%        \resumeItemListStart
+%          \resumeItem{Description1} % Required
+%          \resumeItem{Description2} % Optional
+%          \resumeItem{Description3} % Optional
+%        \resumeItemListEnd
+%
+%    % Add another item in the experience section using \resumeSubheading if needed.
+%    \resumeSubHeadingListEnd
+
+
+% Example:
+\section{Experience} 
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Member - Technology and Skill Building Department} 
+      {Mar. 2026 -- Present} 
+      {UP Mindanao Society of Programmers and Refined Computer Scientists (SPARCS)}
+      {}
+      \resumeItemListStart
+        \resumeItem{Lectured an intro to REST API and backend programming using PostgreSQL, Express.js, and Postman}
+        \resumeItem{Facilitated and communicated with department heads to organize a Bit/wise event} 
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Member - Software and Web Development} 
+      {Mar. 2026 - Present} 
+      {AWS Student Builder Groups - UP Mindanao} 
+      {}
+      \resumeItemListStart
+        \resumeItem{Lectured an intro to AWS Cloud Development Kit for rapid AWS development} 
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%----------EDUCATION (Optional)----------
+% Format:
+%   \section{Education} 
+%       \resumeSubHeadingListStart
+%           \resumeSubheading
+%             {Institution/University}
+%             {Start Date -- End Date} % If the end date is same as the start date, it should only display the start date 
+%             {Degree Program}
+%             {}
+%             \resumeItemListStart
+%               \resumeItem{GPA: X.XX} % Optional
+%               \resumeItem{\textbf{Scholarships}\vspace{-3pt} 
+%                   \begin{itemize}
+%                       \item {DOST Undergraduate Merit Scholarship}
+%                   \end{itemize}\vspace{-5pt}}
+%             \resumeItemListEnd
+%           % Add another item in the education section using \resumeSubheading if needed.
+%         \resumeSubHeadingListEnd
+% NOTE: Lines 161-164 are optional. Do not add anything for scholarships when user left it empty.
+
+% Example:
+\section{Education} 
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {University of the Philippines Mindanao} 
+      {Aug. 2025 -- Present}
+      {Bachelor of Science in Computer Science} 
+      {}
+      \resumeItemListStart
+        \resumeItem{\textbf{Scholarships}\vspace{-3pt}
+            \begin{itemize}
+                \item {DOST Undergraduate Merit Scholarship}
+            \end{itemize}\vspace{-5pt}}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%----------AWARDS/ACHIEVEMENTS (Optional)----------
+% Format:
+%   \section{Awards/Achievements}
+%     \resumeSubHeadingListStart
+%       \resumeSubheading
+%         {Award/Achievement Title} 
+%         {Start Date -- End Date} % If the end date is same as the start date, it should only display the start date 
+%         {}{}
+%         \vspace{-15pt}
+%         \resumeItemListStart
+%           \resumeItem{Description1} % Required
+%           \resumeItem{Description2} % Optional
+%           \resumeItem{Description3} % Optional
+%         \resumeItemListEnd
+%         % Add another item in this section using \resumeSubheading if needed.
+%     \resumeSubHeadingListEnd
+
+% Example:
+\section{Awards/Achievements}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Qualifier, AWS Innovation Cup Mindanao Regional Finals} 
+      {Jun. 2026} 
+      {}{}
+      \vspace{-15pt}
+      \resumeItemListStart
+        \resumeItem{Co-developed Ewast, a unifying hub for citizens, admins and CENRO to analyze urgency and dispatch optimized routes.} 
+        \resumeItem{The idea landed a spot within the Top 20 teams across Mindanao.}
+      \resumeItemListEnd
+      
+    \resumeSubheading
+      {Qualifier, UP ACM Algolympics 2026} 
+      {May 2026}
+      {}{}
+      \vspace{-15pt}
+      \resumeItemListStart
+        \resumeItem{Competed with 80 teams of 3 and qualified with in the top 25 teams to compete in UP Diliman, Quezon City, Manila}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%----------PROJECTS----------
+% Format:
+%    \section{Projects}
+%      \resumeSubHeadingListStart
+%        \resumeProjectHeading
+%          {\textbf{Project Name}}
+%          {Start Date -- End Date} % If the end date is same as the start date, it should only display the start date 
+%          \resumeItemListStart
+%            \resumeItem{Description1} % Required
+%            \resumeItem{Description2} % Optional
+%            \resumeItem{Description3} % Optional
+%          \resumeItemListEnd
+%        % Add another item in this section using \resumeProjectHeading if needed.
+%      \resumeSubHeadingListEnd
+
+% Example:
+\section{Projects}
+  \resumeSubHeadingListStart
+    \resumeProjectHeading
+      {\textbf{LaTeX.CV: Online LaTeX CV Generator}}
+      {Jul. 2026}
+      \resumeItemListStart
+        \resumeItem{Developed a full stack CV app with auto-save using PostgresSQL, Express.js, React, and Node.js.}
+        \resumeItem{Integrated a Python script to generate LaTeX as a template for CV creation.}
+      \resumeItemListEnd
+
+    \resumeProjectHeading
+      {\textbf{CampusOrbit: Digitalized PUV Route System at UP Mindanao}} 
+      {May. 2026} 
+      \resumeItemListStart
+        \resumeItem{Co-developed the realtime ping system of the service inspired by the Davao City Bus Website.}
+        \resumeItem{Implemented typography, color palette, and UI screens for tracking rentals, payments, and updates.} 
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+%----------SKILLS AND CHARACTERISTICS----------
+% Format:
+%    \section{Skills and Characteristics} 
+%      \begin{itemize}[leftmargin=0.15in, label={}]
+%        \small{\item{
+%          \textbf{Skill Group:} Key Values
+%          \\
+%          % Add other skill groups when necessary
+%          \\
+%          \textbf{Soft Skills:} value from tags
+%        }}
+%      \end{itemize}
+
+% Example:
+\section{Skills and Characteristics} 
+  \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+      \textbf{Programming \& Backend:} Python, C/C++, Dart, Java, PHP, JavaScript, SQL, Laravel, Express.js
+      \\
+      \textbf{Frontend \& Web Dev:} Git, GitHub, React.js, HTML, CSS, 
+      \\
+      \textbf{Tools \& Databases:} Canva, Figma, Flutter, MySQL, PostgreSQL, LaTeX 
+      \\
+      \textbf{Soft Skills:} Adaptable, Self-management, Proactive, Teamwork, Professional, Active Listener 
+    }}
+  \end{itemize}
+
+%----------CERTIFICATIONS (Optional)----------
+% Format:
+%    \section{Certifications} 
+%      \resumeSubHeadingListStart
+%        \resumeSubheading
+%          {Cert Name \textit{Issuing Body}} 
+%          {Date Issued} 
+%          {}{}
+%          \vspace{-15pt}
+%          % OPTIONAL. Do not add the next 4 lines if neither one of the credential ID or cert url is present. It is entrusted that the user doesn't fabricate their certifcates.
+%          \resumeItemListStart
+%            \resumeItem{ID: Credential ID} 
+%            \resumeItem{URL: cert url}
+%          \resumeItemListEnd
+%      \resumeSubHeadingListEnd
+%      \vspace{-5pt}
+
+% Example:
+\section{Certifications} 
+   \resumeSubHeadingListStart
+    \resumeSubheading
+      {High School Intern \textit{(Ingenuity)}} 
+      {Jun. 2023} 
+      {}{}
+      \vspace{-15pt}
+    \resumeSubHeadingListEnd
+    \vspace{-5pt}
+
+%----------PUBLICATIONS (Optional)----------
+% Format: 
+%    \section{Research Publications}
+%      \resumeSubHeadingListStart
+%        \small{
+%        \item \textbf{(item number). Authors (Format: Surname, Initials)(year, month, day).} Title of Publication (Italicize if there are scientific names of organisms or Latin words in the Title). Name of Institution (if any). Journal/Conference (if any). 
+%        \url{DOI Link (if any)}
+%        \vspace{4pt}
+%      % Add another item if necessary
+%        }
+%      \resumeSubHeadingListEnd
+
+% Example
+\section{Research Publications}
+  \resumeSubHeadingListStart
+    \small{
+    \item \textbf{1. Garay D. J. M., Gutierrez, M. M., \& Tia, Z. E. D. (2025, May).} \textit{In Silico} Analysis of Phytochemical Compounds from the ethnomedicine, \textit{Ixora coccinea (L.)}, for Potential Inhibition of SARS-CoV-2. Philippine Science High School System.
+    \vspace{4pt}
+    }
+  \resumeSubHeadingListEnd
+
+\end{document}
